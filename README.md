@@ -60,11 +60,7 @@ $ cd /Ta-Yo/Raspberry-Pi
 3. 자신의 환경에 맞게 servo.py, line_detect.py 수정 후 실행
 
 ``` 
-~Ta-Yo/Raspberry-Pi$ python line_detect.py
-```
-or
- ``` 
-~Ta-Yo/Raspberry-Pi$ python3 line_detect.py
+~Ta-Yo/Raspberry-Pi$ python line_detect.py #or python3 line_detect.py
 ```
 + 실습 동영상(아래 이미지 클릭 시, Youtube로 이동합니다.)
 
@@ -94,45 +90,95 @@ or
 + In Server(GPU server(Pytorch))
   + 딥 러닝 프레임워크로 pytorch 사용, GPU 서버는 CUDA 연산이 가능해야함.
   + 미리 학습시켜 놓은 Yolo 모델(Weight)파일을 이용하여, 라즈베리파이가 보내주는 영상의 객체를 인식.
-  + 인식되는 객체를 리스트 구조체로 저장하여 리스트 내부에서 자동차, 사람의 객체의 수가 일정 수준 이상일 경우 혼잡 지역으로 판단하여 Client에 감속 명령.
+  + 인식되는 객체를 리스트 자료구조로 저장하여 리스트 내부에서 자동차, 사람의 객체의 수가 일정 수준 이상일 경우 혼잡 지역으로 판단하여 Client에 감속 명령.
   ```python
-    #코드 작성 후 삽입 예정
+  class_name = list(map(lambda x: write(x, frame)[1], output)) # 프레임마다 인식되는 객체를 리스트 자료구조로 저장.
+  Crowded = int(class_name.count('person')+class_name.count('car'))
+  ...
+  if Crowded > 5:
+  conn.send(sendData_Slow.encode('utf-8'))
+  Pre_SendData = SendData_Slow
   ```
-  + 적색 신호등, 정지 표지판에서 
+  + 어린이 보호구역에서 Client에 감속 명령
+  ```python
+  ...
+  elif class_name == 'kidzone' and Pre_SendData != sendData_Slow:
+    conn.send(sendData_Slow.encode('utf-8'))
+    Pre_SendData = SendData_Slow
+  ```  
+  + 적색 신호등, 정지 표지판에서 Client에 정지 명령
+  ```python
+  ...
+  elif (class_name == 'redright' or class_name == 'stop) and Pre_SendData != sendData_Stop:
+    conn.send(sendData_Stop.encode('utf-8'))
+    Pre_SendData = sendData_Stop
+  ```
+  
 + In Client(RPi)
   + 어린이 보호구역, 혼잡 지역 등의 감속 구간에서 자동차 앞의 초음파 센서를 통한 긴급제동 활성화. 감속 구간 벗어날 시, 원래의 속도로 재주행.
-    ```python
-    if recVData == 'L':   # 'L' is sendData_Slow in Server
-      pre_speed = speed
-      speed = 20
-      motor.Forward(speed)
-      dist = choeumpa.distance() # activate ultrasonic wave sensor
-      if dist <= 7:
-        motor.Stop()
-      else: pass
-    ...
-    elif recVData =='R':
-      speed = pre_speed
-      motor.Forward(speed)
-    ```
-  + 적색 신호등에서 차량 정지 후 청색 신호등 변경 시, 이전의 속도로 재주행
-    ```python
-    if recVData == 'S':   # 'L' is sendData_Stop in Server
-      pre_speed = speed
+  ```python
+  if recVData == 'L':   # 'L' is sendData_Slow in Server
+    pre_speed = speed
+    speed = 20
+    motor.Forward(speed)
+    dist = choeumpa.distance() # activate ultrasonic wave sensor
+    if dist <= 7:
       motor.Stop()
-    ...
-    elif recVData =='R':
-      speed = pre_speed
-      motor.Forward(speed)
-    ```
+    else: pass
+  ...
+  elif recVData =='R':
+    speed = pre_speed
+    motor.Forward(speed)
+  ```
+  + 적색 신호등에서 차량 정지 후 청색 신호등 변경 시, 이전의 속도로 재주행
+  ```python
+  if recVData == 'S':   # 'L' is sendData_Stop in Server
+    pre_speed = speed
+    motor.Stop()
+  ...
+  elif recVData =='R':
+    speed = pre_speed
+    motor.Forward(speed)
+  ```
 + 객체 인식 실습
 + In Server(GPU server(Pytorch))
 1. Pytorch 프레임워크가 설치되어 있고, CUDA 연산이 가능한 GPU 서버에서 수행 되어야 함.
+2. Server(GPU server(Pytorch))에 예제 소스코드 복제
+``` 
+$ git clone https://github.com/lky9620/Ta-Yo.git
+```
+3. server 디렉토리로 이동
+``` 
+$ cd /Ta-Yo/server
+```
+4. 아래 주소의 .weight, .names, .cfg 파일을 모두 해당 디렉토리에 저장
+https://drive.google.com/drive/folders/1HyhbhdyAGmOdNXJiGvToS7LLb5e1TObU?usp=sharing
+5. server.py의 ip 및 포트번호 정의 후 server.py 실행 (ip는 빈칸이여도 무관)
+``` python
+HOST = '' # your IP address
+PORT =  # your port number(except Well-knwon port number)
+```
+``` 
+~/Ta-Yo/server$ python server.py #or python3 server.py 
+```
 + In Client(Rpi)
-1.
-2.
-3.
-4.
+1. Client에 예제 소스코드 복제
+``` 
+$ git clone https://github.com/lky9620/Ta-Yo.git
+```
+2. Raspberry-Pi 디렉토리로 이동
+``` 
+$ cd /Ta-Yo/Raspberry-Pi
+```
+3. client.py의 ip 및 포트번호 정의 후 client.py실행
+``` python
+HOST = '' # your IP address
+PORT =  # your port number(except Well-knwon port number)
+```
+``` 
+~/Ta-Yo/server$ python server.py #or python3 server.py 
+```
 + 객체 인식 실습 영상
++ 추후 업로드 
 
 ### 해당 프로젝트는 단국대학교 공학교육혁신센터에서 진행하는 2020 캡스톤디자인 Echo+ Project의 지원을 받았으며, (주)3DEMP사와 산학 협력하여 수행하였음.
