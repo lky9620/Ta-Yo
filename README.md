@@ -157,6 +157,7 @@ https://drive.google.com/drive/folders/1HyhbhdyAGmOdNXJiGvToS7LLb5e1TObU?usp=sha
 ``` python
 HOST = '' # your IP address
 PORT =  # your port number(except Well-knwon port number)
+s.bind(HOST,PORT)
 ```
 ``` 
 ~/Ta-Yo/server$ python server.py #or python3 server.py 
@@ -174,6 +175,7 @@ $ cd /Ta-Yo/Raspberry-Pi
 ``` python
 HOST = '' # your IP address
 PORT =  # your port number(except Well-knwon port number)
+c.connect((HOST,PORT))
 ```
 ``` 
 ~/Ta-Yo/server$ python server.py #or python3 server.py 
