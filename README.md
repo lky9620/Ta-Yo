@@ -69,7 +69,7 @@ or
 + 실습 동영상(아래 이미지 클릭 시, Youtube로 이동합니다.)
 
  [![SelfDriving Car](https://img.youtube.com/vi/R1AdUfwLoxI/0.jpg)](https://youtu.be/R1AdUfwLoxI?t=0s)
- 
+
 ### Yolo를 이용한 신호등, 표지판 등의 객체인식
 + Yolo(실시간 객체 인식)을 통해서 청색, 적색 신호등, 사람, 자동차 뒷모습, 여러 표지판 등을 미리 학습하여 가중치 모델(학습 모델) 생성.
   + 방법은 추후에 notebook 파일 업로드 예정
@@ -89,6 +89,7 @@ or
 <img width = "25%" src = "https://user-images.githubusercontent.com/61020702/97980075-8f296a00-1e13-11eb-8f74-630a94370be4.JPG">
 </p>
 </div>
+
 + Raspberry-Pi의 성능을 극복하기 위해 GPU 서버(Pytorch)와 TCP 소켓통신 사용
 + In Server(GPU server(Pytorch))
   + 딥 러닝 프레임워크로 pytorch 사용, GPU 서버는 CUDA 연산이 가능해야함.
