@@ -49,29 +49,28 @@
   <p align = "center"><img width = "70%" src =https://user-images.githubusercontent.com/61020702/97975014-cac03600-1e0b-11eb-87da-eb07428c5de4.JPG></p>
   
 + 실습
-  1. RPi(Rasbian)에 예제 소스코드 복제
-  ``` 
-  $ git clone https://github.com/lky9620/Ta-Yo.git
-  ```
-  2. Raspberry-Pi 디렉토리로 이동
-  ``` 
-  $ cd /Ta-Yo/Raspberry-Pi 
-  ```
-  3. 자신의 환경에 맞게 servo.py, line_detect.py 수정 후 실행
-  
-  ``` 
-  ~Ta-Yo/Raspberry-Pi$ python line_detect.py
-  ```
-  or
-   ``` 
-  ~Ta-Yo/Raspberry-Pi$ python3 line_detect.py
-  ```
-+ 실습 동영상
+1. RPi(Rasbian)에 예제 소스코드 복제
+``` 
+$ git clone https://github.com/lky9620/Ta-Yo.git
+```
+2. Raspberry-Pi 디렉토리로 이동
+``` 
+$ cd /Ta-Yo/Raspberry-Pi 
+```
+3. 자신의 환경에 맞게 servo.py, line_detect.py 수정 후 실행
+
+``` 
+~Ta-Yo/Raspberry-Pi$ python line_detect.py
+```
+or
+ ``` 
+~Ta-Yo/Raspberry-Pi$ python3 line_detect.py
+```
++ 실습 동영상(아래 이미지 클릭 시, Youtube로 이동합니다.)
 
  [![SelfDriving Car](https://img.youtube.com/vi/R1AdUfwLoxI/0.jpg)](https://youtu.be/R1AdUfwLoxI?t=0s)
  
 ### Yolo를 이용한 신호등, 표지판 등의 객체인식
-+ Raspberry-Pi의 성능을 극복하기 위해 GPU 서버(Pytorch)와 TCP 소켓통신 사용
 + Yolo(실시간 객체 인식)을 통해서 청색, 적색 신호등, 사람, 자동차 뒷모습, 여러 표지판 등을 미리 학습하여 가중치 모델(학습 모델) 생성.
   + 방법은 추후에 notebook 파일 업로드 예정
   + 데이터셋은 저작권 등의 문제로 비공개
@@ -90,10 +89,49 @@
 <img width = "25%" src = "https://user-images.githubusercontent.com/61020702/97980075-8f296a00-1e13-11eb-8f74-630a94370be4.JPG">
 </p>
 </div>
++ Raspberry-Pi의 성능을 극복하기 위해 GPU 서버(Pytorch)와 TCP 소켓통신 사용
++ In Server(GPU server(Pytorch))
+  + 딥 러닝 프레임워크로 pytorch 사용, GPU 서버는 CUDA 연산이 가능해야함.
+  + 미리 학습시켜 놓은 Yolo 모델(Weight)파일을 이용하여, 라즈베리파이가 보내주는 영상의 객체를 인식.
+  + 인식되는 객체를 리스트 구조체로 저장하여 리스트 내부에서 자동차, 사람의 객체의 수가 일정 수준 이상일 경우 혼잡 지역으로 판단하여 Client에 감속 명령.
+  ```python
+    #코드 작성 후 삽입 예정
+  ```
+  + 적색 신호등, 정지 표지판에서 
++ In Client(RPi)
+  + 어린이 보호구역, 혼잡 지역 등의 감속 구간에서 자동차 앞의 초음파 센서를 통한 긴급제동 활성화. 감속 구간 벗어날 시, 원래의 속도로 재주행.
+    ```python
+    if recVData == 'L':   # 'L' is sendData_Slow in Server
+      pre_speed = speed
+      speed = 20
+      motor.Forward(speed)
+      dist = choeumpa.distance() # activate ultrasonic wave sensor
+      if dist <= 7:
+        motor.Stop()
+      else: pass
+    ...
+    elif recVData =='R':
+      speed = pre_speed
+      motor.Forward(speed)
+    ```
+  + 적색 신호등에서 차량 정지 후 청색 신호등 변경 시, 이전의 속도로 재주행
+    ```python
+    if recVData == 'S':   # 'L' is sendData_Stop in Server
+      pre_speed = speed
+      motor.Stop()
+    ...
+    elif recVData =='R':
+      speed = pre_speed
+      motor.Forward(speed)
+    ```
++ 객체 인식 실습
++ In Server(GPU server(Pytorch))
+1. Pytorch 프레임워크가 설치되어 있고, CUDA 연산이 가능한 GPU 서버에서 수행 되어야 함.
++ In Client(Rpi)
+1.
+2.
+3.
+4.
++ 객체 인식 실습 영상
 
-+ 어린이 보호구역 등, 감속 구간에서 자동차 앞의 초음파 센서를 통한 긴급제동 활성화.
-
-###
-``` 
-$git clone https://github.com/lky9620/Ta-Yo//Raspberry-Pi
-```
+### 해당 프로젝트는 단국대학교 공학교육혁신센터에서 진행하는 2020 캡스톤디자인 Echo+ Project의 지원을 받았으며, (주)3DEMP사와 산학 협력하여 수행하였음.
