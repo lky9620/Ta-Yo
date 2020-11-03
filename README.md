@@ -69,13 +69,30 @@
 + 실습 동영상
 
  [![SelfDriving Car](https://img.youtube.com/vi/R1AdUfwLoxI/0.jpg)](https://youtu.be/R1AdUfwLoxI?t=0s)
-
-
+ 
 ### Yolo를 이용한 신호등, 표지판 등의 객체인식
-+ Yolo(실시간 객체 인식)을 통해서 청색, 적색 신호등, 사람, 여러 표지판 등을 미리 학습하여 가중치 모델(학습 모델) 생성.
-++ 방법은 추후에 notebook 파일 업로드 예정
-++ 데이터셋은 저작권 등의 문제로 비공개
-+
++ Raspberry-Pi의 성능을 극복하기 위해 GPU 서버(Pytorch)와 TCP 소켓통신 사용
++ Yolo(실시간 객체 인식)을 통해서 청색, 적색 신호등, 사람, 자동차 뒷모습, 여러 표지판 등을 미리 학습하여 가중치 모델(학습 모델) 생성.
+  + 방법은 추후에 notebook 파일 업로드 예정
+  + 데이터셋은 저작권 등의 문제로 비공개
+<div>
+<p align = "center">
+<img width = "24%" src = "https://user-images.githubusercontent.com/61020702/97980056-8a64b600-1e13-11eb-81ce-9ae191932338.JPG">
+<img width = "24%" src = "https://user-images.githubusercontent.com/61020702/97980061-8b95e300-1e13-11eb-9384-b66f695fec7e.JPG">
+<img width = "24%" src = "https://user-images.githubusercontent.com/61020702/97980064-8c2e7980-1e13-11eb-9371-4b6d49f75c66.JPG">
+<img width = "24%" src = "https://user-images.githubusercontent.com/61020702/97980069-8df83d00-1e13-11eb-848c-2f8677413658.JPG">
+</p>
+</div>
+<div>
+<p align = "center">
+<img width = "25%" src = "https://user-images.githubusercontent.com/61020702/97980071-8e90d380-1e13-11eb-8f01-1d0e9f499651.JPG">
+<img width = "25%" src = "https://user-images.githubusercontent.com/61020702/97980074-8e90d380-1e13-11eb-84ec-17419b660cdc.JPG">
+<img width = "25%" src = "https://user-images.githubusercontent.com/61020702/97980075-8f296a00-1e13-11eb-8f74-630a94370be4.JPG">
+</p>
+</div>
+
++ 어린이 보호구역 등, 감속 구간에서 자동차 앞의 초음파 센서를 통한 긴급제동 활성화.
+
 ###
 ``` 
 $git clone https://github.com/lky9620/Ta-Yo//Raspberry-Pi
