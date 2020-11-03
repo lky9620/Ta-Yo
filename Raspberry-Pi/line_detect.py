@@ -6,7 +6,6 @@ import socket
 import sys
 import motor
 import servo
-import choeumpa
 
 def DetectLineSlope(src):
     gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
