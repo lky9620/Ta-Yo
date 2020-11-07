@@ -181,6 +181,7 @@ c.connect((HOST,PORT))
 ~/Ta-Yo/server$ python server.py #or python3 server.py 
 ```
 + 객체 인식 실습 동영상(아래 이미지 클릭 시, Youtube로 이동합니다.)
+
 [![SelfDriving Car-ObjectDetection](https://img.youtube.com/vi/PZ1FLs196hc/0.jpg)](https://youtu.be/PZ1FLs196hc?t=0s)
 
 ### 해당 프로젝트는 단국대학교 공학교육혁신센터에서 진행하는 2020 캡스톤디자인 Echo+ Project의 지원을 받았으며, (주)3DEMP사와 산학 협력하여 수행하였음.
