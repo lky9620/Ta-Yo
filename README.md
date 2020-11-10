@@ -67,7 +67,7 @@ $ cd /Ta-Yo/Raspberry-Pi
  [![SelfDriving Car](https://img.youtube.com/vi/R1AdUfwLoxI/0.jpg)](https://youtu.be/R1AdUfwLoxI?t=0s)
 
 ### Yolo를 이용한 신호등, 표지판 등의 객체인식
-+ Yolo(실시간 객체 인식)을 통해서 청색, 적색 신호등, 사람, 자동차 뒷모습, 여러 표지판 등을 미리 학습하여 가중치 모델(학습 모델) 생성.
++ Yolo(실시간 객체 인식)을 통해서 청색, 적색 신호등, 사람, 자동차 뒷모습, 여러 표지판 등을 미리 학습하여 가중치 모델(학습 모델) 생성
   + 방법은 추후에 notebook 파일 업로드 예정
   + 데이터셋은 저작권 등의 문제로 비공개
 <div>
