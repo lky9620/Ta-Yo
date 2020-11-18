@@ -21,7 +21,7 @@
   
   + ROI(Region of Interst, 관심 구역 설정)
   ```python
-  rectangle = np.array([[(0, height), (120, 300), (520, 300), (640, height)]]) #[upper_left, lower_left, upper_right, lower_right]
+  rectangle = np.array([[(0, height), (120, 300), (520, 300), (640, height)]]) ##[upper_left, lower_left, upper_right, lower_right]
   ```
   <p align = "center"><img width = "50%" src = "https://user-images.githubusercontent.com/61020702/97960350-a60c9400-1df4-11eb-8289-d5575eee4a0b.png"></p>
   
@@ -41,12 +41,12 @@
   ```python
   def DetectLineSlope(src):
   ...
-  return mimg, degree_L, degree_R ## 대표선이 그려진 영상의 프레임, 왼쪽 대표선의 기울기, 오른쪽 대표선의 기울기
+  return mimg, degree_L, degree_R ##대표선이 그려진 영상의 프레임, 왼쪽 대표선의 기울기, 오른쪽 대표선의 기울기
   ```
   + 대표선 추출: /Raspberry-Pi/line_detect.py의 DetectLineSlope(src)에 정의, 인식 되는 양 차선의 안쪽차선을 대표선으로 결정.
   + 대표선의 기울기 구하기: 대표선으로 차선으로 인식되는 직선의 좌표(x1,y1,x2,y2)를 통해 왼쪽, 오른쪽 대표선의 기울기를 구함, 인식되는 차선이 없을 경우 0을 반환.
   + line_detect.py(예제)의 알고리즘 흐름도 
-  <p align = "center"><img width = "70%" src =https://user-images.githubusercontent.com/61020702/97975014-cac03600-1e0b-11eb-87da-eb07428c5de4.JPG></p>
+  <p align = "center"><img width = "80%" src =https://user-images.githubusercontent.com/61020702/97975014-cac03600-1e0b-11eb-87da-eb07428c5de4.JPG></p>
   
 + 실습
 1. RPi(Rasbian)에 예제 소스코드 복제
@@ -90,31 +90,50 @@ $ cd /Ta-Yo/Raspberry-Pi
 + In Server(GPU server(Pytorch))
   + 딥 러닝 프레임워크로 pytorch 사용, GPU 서버는 CUDA 연산이 가능해야함.
   + 미리 학습시켜 놓은 Yolo 모델(Weight)파일을 이용하여, 라즈베리파이가 보내주는 영상의 객체를 인식.
-  + 인식되는 객체를 리스트 자료구조로 저장하여 리스트 내부에서 자동차, 사람의 객체의 수가 일정 수준 이상일 경우 혼잡 지역으로 판단하여 Client에 감속 명령.
+  + 인식되는 객체에 따라 Client(Rpi)에서 수행해야 하는 일을 위험순위에 따라 리스트 자료구조에 저장 후, 위험순위가 가장 높은 행위를 전달함.
   ```python
   class_name = list(map(lambda x: write(x, frame)[1], output)) # 프레임마다 인식되는 객체를 리스트 자료구조로 저장.
-  Crowded = int(class_name.count('person')+class_name.count('car'))
-  ...
-  if Crowded > 5:
-  conn.send(sendData_Slow.encode('utf-8'))
-  Pre_SendData = SendData_Slow
+      if class_name.count('redlight') >= 1:
+        cslist.append(1)
+    elif class_name.count('greenlight') >= 1:
+        cslist.append(4)
+    #...
+    elif class_name.count('kidzone') >= 1:
+        cslist.append(3)
+    elif class_name.count('kidzoneout') >= 1:
+        cslist.append(4)
+    else:
+        cslist.append(4)
   ```
-  + 어린이 보호구역에서 Client에 감속 명령
   ```python
-  ...
-  elif class_name == 'kidzone' and Pre_SendData != sendData_Slow:
-    conn.send(sendData_Slow.encode('utf-8'))
-    Pre_SendData = SendData_Slow
-  ```  
-  + 적색 신호등, 정지 표지판에서 Client에 정지 명령
-  ```python
-  ...
-  elif (class_name == 'redright' or class_name == 'stop) and Pre_SendData != sendData_Stop:
-    conn.send(sendData_Stop.encode('utf-8'))
-    Pre_SendData = sendData_Stop
+  def csend(direction):
+    if direction == 0:
+        conn.send(sendData_None.encode('utf-8'))
+    elif direction == 1:
+        conn.send(sendData_Stop.encode('utf-8')) ## 정지 명령 데이터
+    elif direction == 2:
+        conn.send(sendData_Sign.encode('utf-8')) ## 정지 표지판 명령 데이터
+    elif direction == 3:
+        conn.send(sendData_Slow.encode('utf-8')) ## 감속 구간 명령 데이터
+    elif direction == 4:
+        conn.send(sendData_Return.encode('utf-8')) ## 속도 복귀 명령 데이터
   ```
+    + redlight, stop(sign)에서 Client에 정지 명령
+    + 어린이 보호구역, 혼잡지역에서 Client에 감속 명령
+    + kidzoneout, greenlight에서 Client에 속도 복귀 명령
   
 + In Client(RPi)
+  + 적색 신호등에서 차량 정지 후 청색 신호등 변경 시, 이전의 속도로 재주행
+  ```python
+  elif recVData == 'T':  ## 'T' is sendData_Stop in Server
+    motor.Stop()
+    print('Redlight Stop')
+  #...
+  elif recVData =='R': ## 'R' is sendData_Return in Server
+    motor.Forward(speed)
+    print('Normal Driving')
+    pre_data = '' ## Pre Data Memorized in the argument pre_data
+  ```
   + 어린이 보호구역, 혼잡 지역 등의 감속 구간에서 자동차 앞의 초음파 센서를 통한 긴급제동 활성화. 감속 구간 벗어날 시, 원래의 속도로 재주행.
   ```python
   if recVData == 'L':   # 'L' is sendData_Slow in Server
@@ -125,21 +144,13 @@ $ cd /Ta-Yo/Raspberry-Pi
     if dist <= 7:
       motor.Stop()
     else: pass
-  ...
+  # ...
   elif recVData =='R':
     speed = pre_speed
     motor.Forward(speed)
   ```
-  + 적색 신호등에서 차량 정지 후 청색 신호등 변경 시, 이전의 속도로 재주행
-  ```python
-  if recVData == 'S':   # 'L' is sendData_Stop in Server
-    pre_speed = speed
-    motor.Stop()
-  ...
-  elif recVData =='R':
-    speed = pre_speed
-    motor.Forward(speed)
-  ```
+  
+  
 + 객체 인식 실습
 + In Server(GPU server(Pytorch))
 1. Pytorch 프레임워크가 설치되어 있고, CUDA 연산이 가능한 GPU 서버에서 수행 되어야 함.
