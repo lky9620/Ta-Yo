@@ -128,28 +128,42 @@ $ cd /Ta-Yo/Raspberry-Pi
   elif recVData == 'T':  ## 'T' is sendData_Stop in Server
     motor.Stop()
     print('Redlight Stop')
-  #...
+
   elif recVData =='R': ## 'R' is sendData_Return in Server
     motor.Forward(speed)
     print('Normal Driving')
-    pre_data = '' ## Pre Data Memorized in the argument pre_data
+    pre_data = '' ## Pre Data initialize.
   ```
-  + 어린이 보호구역, 혼잡 지역 등의 감속 구간에서 자동차 앞의 초음파 센서를 통한 긴급제동 활성화. 감속 구간 벗어날 시, 원래의 속도로 재주행.
+  + 정지 표지판에서 차량 정지 후 정지표지판 미인식 시 이전의 속도로 재주행
   ```python
-  if recVData == 'L':   # 'L' is sendData_Slow in Server
-    pre_speed = speed
-    speed = 20
-    motor.Forward(speed)
-    dist = choeumpa.distance() # activate ultrasonic wave sensor
-    if dist <= 7:
-      motor.Stop()
-    else: pass
-  # ...
-  elif recVData =='R':
-    speed = pre_speed
-    motor.Forward(speed)
+  elif recvData == 'G':
+    motor.Stop()
+    print('Stop sign Stop')
+    pre_data='G' ## Pre Data memorize in Variable pre_data
+
+  elif pre_data=='G' and recvData =='N':  ## Pre Data is 'G' and recvData is None
+    motor.Forward(25)
+    print('Normal Driving')
+    pre_data = ''  ## pre_data initialize
   ```
-  
+  + 어린이 보호구역, 혼잡지역에서 자동차 감속, 감속구간 벗어날 시 원래의 속도로 재주행.
+  ```python
+  if recvData == 'S':
+    motor.Forward(low_speed)
+    print('Driving Slow')
+
+  elif recvData == 'R':
+    motor.Forward(speed)
+    print('Normal Driving')
+  ```
+  + 어린이 보호구역, 혼잡지역과 같은 감속 구간 진입 시, 긴급제동 기능 활성화. 일정 거리 이내의 물체 감지 시 긴급제동.
+ ```python
+   if pre_data == 'S': ## Variable pre_data is 'S' when enter deceleration section
+    dist = choeumpa.distance()
+    if dist <=threshold:  
+      print('Force Stop!!')    
+      motor.Stop()
+  ``` 
   
 + 객체 인식 실습
 + In Server(GPU server(Pytorch))
