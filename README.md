@@ -159,7 +159,7 @@ $ cd /Ta-Yo/Raspberry-Pi
   + 어린이 보호구역, 혼잡지역과 같은 감속 구간 진입 시, 긴급제동 기능 활성화. 일정 거리 이내의 물체 감지 시 긴급제동.
  ```python
    if pre_data == 'S': ## Variable pre_data is 'S' when enter deceleration section
-    dist = choeumpa.distance()
+    dist = choeumpa.distance()  ## Activate ultrasonic wave senor
     if dist <=threshold:  
       print('Force Stop!!')    
       motor.Stop()
