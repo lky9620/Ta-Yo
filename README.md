@@ -18,16 +18,16 @@
   can = cv2.Canny(gray, 50, 200, None, 3)
   ```
   <p align = "center"><img width = "50%" src = "https://user-images.githubusercontent.com/61020702/97960348-a3aa3a00-1df4-11eb-949e-bbf1708c6c95.png"></p>
+
+  + HoughLines(직선 검출)
+  ```python
+  line_arr = cv2.HoughLinesP(masked_image, 1, np.pi / 180, 20, minLineLength=10, maxLineGap=10)
+  ```
+  <p align = "center"><img width = "50%" src = "https://user-images.githubusercontent.com/61020702/97960350-a60c9400-1df4-11eb-8289-d5575eee4a0b.png"></p>
   
   + ROI(Region of Interst, 관심 구역 설정)
   ```python
   rectangle = np.array([[(0, height), (120, 300), (520, 300), (640, height)]]) ##[upper_left, lower_left, upper_right, lower_right]
-  ```
-  <p align = "center"><img width = "50%" src = "https://user-images.githubusercontent.com/61020702/97960350-a60c9400-1df4-11eb-8289-d5575eee4a0b.png"></p>
-  
-  + HoughLines(직선 검출)
-  ```python
-  line_arr = cv2.HoughLinesP(masked_image, 1, np.pi / 180, 20, minLineLength=10, maxLineGap=10)
   ```
   <p align = "center"><img width = "50%" src = "https://user-images.githubusercontent.com/61020702/97960354-a73dc100-1df4-11eb-8fd5-808a5c7cd416.png"></p>
   
