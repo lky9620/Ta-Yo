@@ -1,6 +1,8 @@
 # 라즈베리파이를 이용한 교육용 자율주행 자동차 개발
 ## Self-driving  Model Car with RPi
 ### 주요 기능 및 작동 방식
+ <p align = "center"><img width = "70%" src = "https://user-images.githubusercontent.com/61020702/100450353-d6e0a000-30f8-11eb-83cb-1f0d281911aa.JPG"></p>
+ 
 + 실시간 차선 인식을 통한 차로이탈 방지 
 + 신호등, 표지판등의 객체 인식을 통한 자율주행
 + 초음파 센서를 이용한 긴급 제동
